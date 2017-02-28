@@ -24,7 +24,7 @@ app.post('/inc_rank',function(req, res) {
         res.json(users[users.length-1]);
 });
 
-app.post('/reset_ratings',function(req, res) {
+app.post('/reset_ratings',function(req,res) {
         users = [];
         res.json(users.length);
 });

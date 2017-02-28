@@ -10,7 +10,17 @@ describe('server', function () {
   before(function () {
     boot();    
   });
-  describe('postGet', function(){      
+  describe('postGet', function(){
+   it('should return 0 as users length', function(done){
+      let request = {};
+      superagent
+      .post('http://localhost:'+port + '/reset_ratings')
+      .send(request)
+      .then(function(res){
+        if(res.body === 0) done();
+        else return;
+      })
+    });        
   it('should post 2,5 groups of users ', function(done){
       var count = 0;
       for(let u = 0; u<groupCapacity*2.5;u++) {

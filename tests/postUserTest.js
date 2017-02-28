@@ -7,7 +7,17 @@ describe('server', function () {
   before(function () {
     boot();    
   });
-  describe('postDefault', function(){      
+  describe('postDefault', function(){   
+    it('should return 0 as users length', function(done){
+      let request = {};
+      superagent
+      .post('http://localhost:'+port + '/reset_ratings')
+      .send(request)
+      .then(function(res){
+        if(res.body === 0) done();
+        else return;
+      })
+    });     
     it('should respond to POST', function(done){
       let request = {"_id":0,"pts":1};
       superagent
@@ -18,7 +28,7 @@ describe('server', function () {
         else return;
       })
     });  
-    it('should respond the same', function(done){
+    it('should return the same', function(done){
       let request = {"_id":0,"pts":1};
       superagent
       .post('http://localhost:'+port + '/inc_rank')

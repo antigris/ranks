@@ -19,7 +19,7 @@ describe('server', function () {
     it('should get array', function(done){
       superagent
       .get('http://localhost:'+port)
-      .then(function(res){console.log(res.body);
+      .then(function(res){
         if(Array.isArray(res.body)) done();
         else return;
       })
