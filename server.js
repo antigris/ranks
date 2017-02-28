@@ -15,6 +15,14 @@ app.get('/', function(req, res) {
   res.json(users);
 });
 
+app.get('/get_rank/:id',function(req,res){
+    res.json(userRank(req.params.id));
+});
+
+app.get('/get_winners',function(req,res){
+    res.json(winners());
+});
+
 app.post('/inc_rank',function(req, res) {
         userId = req.body._id;        
         increment = req.body.pts;
