@@ -7,8 +7,7 @@ describe('server', function () {
   before(function () {
     boot();    
   });
-  describe('getDefault', function(){
-      
+  describe('getDefault', function(){      
     it('should respond to GET', function(done){    
       superagent
         .get('http://localhost:'+port)
@@ -16,9 +15,18 @@ describe('server', function () {
            if(res.statusCode===200) done();
            else return;
         })
-    })
+    });
+    it('should get array', function(done){
+        superagent
+        .get('http://localhost:'+port)
+        .then(function(res){
+           if(Array.isArray(res.body)) done(); 
+           else return;
+        })
+    });  
   });
   after(function () {
     shutdown();
   });
-});      
+}); 
+  

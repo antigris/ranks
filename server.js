@@ -2,12 +2,15 @@ var express = require('express');
 var app = express();
 var http = require('http');
 var bodyParser = require('body-parser');
+var users = [];
+var groupCapacity = 20;
+initUsers();
 
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 3427);
 
 app.get('/', function(req, res) {
-  res.json(["get200"]);
+  res.json([users]);
 
 });
 
@@ -29,3 +32,17 @@ else {
   exports.shutdown = shutdown;
   exports.port = app.get('port');
 }
+
+function initUsers() {
+    for(let u =0; u<groupCapacity+1;u++) {
+        let user = {
+            points:u*u,
+            groupId:groupIndex(users.length)
+        };
+        users.push(user);
+    }
+}
+
+function groupIndex(userCount) {
+    return ((userCount-userCount%groupCapacity)/groupCapacity);
+};
