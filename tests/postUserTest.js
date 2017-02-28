@@ -9,18 +9,8 @@ describe('server', function () {
     boot();
     reset();    
   });
-  var request = {};
-  describe('postDefault', function(){   
-    it('should return 0 as users length', function(done){
-      superagent
-      .post('http://localhost:'+port + '/reset_ratings')
-      .send(request)
-      .then(function(res){
-        if(res.body === 0) done();
-        else return;
-      })
-    });
-    request = {"_id":0,"pts":1};     
+  var request = {"_id":-10,"pts":-10};
+  describe('postDefault', function(){    
     it('should respond to POST request', function(done){
       superagent
       .post('http://localhost:'+port + '/inc_rank')
