@@ -40,7 +40,7 @@ app.post('/reset_ratings',function(req,res) {
 
 var server = http.createServer(app);
 var boot = function () {
-  
+  loadUsers();
   server.listen(app.get('port'), function(){
     console.info('running on port ' + app.get('port'));
   });
@@ -112,6 +112,12 @@ function userRank(userId) {
         rank.place = containsUser(group,userId) + 1;
     }
     return rank;
+};
+
+function loadUsers() {
+    db.users.find({},function(err,docs){
+        for(let u = 0; u<docs.length;u++) users.push(docs[u]);           
+    });  
 };
 
 
