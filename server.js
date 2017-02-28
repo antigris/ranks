@@ -15,6 +15,20 @@ app.get('/', function(req, res) {
   res.json(users);
 });
 
+app.post('/inc_rank',function(req, res) {
+        userId = req.body._id;        
+        increment = req.body.pts;
+        let index = containsUser(users, userId);
+        if(index > -1) users[index].points+=incRate;
+        else  users.push({"_id":-2,"points":increment,"groupId":groupIndex(users.length)});//when db remove id
+        res.json(users[users.length-1]);
+});
+
+app.post('//reset_ratings',function(req, res) {
+        users = [];
+        res.json(users.length);
+});
+
 var server = http.createServer(app);
 var boot = function () {
   
@@ -50,15 +64,7 @@ function groupIndex(userCount) {
     return ((userCount-userCount%app.get('groupCapacity'))/app.get('groupCapacity'));
 };
 
-app.post('/inc_rank',function(req, res) {
-   // console.log(req.body._id);
-        userId = req.body._id;        
-        increment = req.body.pts;
-        let index = containsUser(users, userId);
-        if(index > -1) users[index].points+=incRate;
-        else  users.push({"_id":-2,"points":increment,"groupId":groupIndex(users.length)});//when db remove id
-        res.json(users[users.length-1]);
-});
+
 
 function containsUser(array, id) {
     for(i=0;i<array.length;i++) {
