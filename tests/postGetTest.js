@@ -1,5 +1,7 @@
 var boot = require('../server').boot;
 var shutdown = require('../server').shutdown;
+var reset = require('../server').reset;
+var init = require('../server').init;
 var port = require('../server').port;
 var groupCapacity = require('../server').groupCapacity;
 var superagent = require('superagent-promise')(require('superagent'), Promise);
@@ -8,7 +10,8 @@ var users =[];
 
 describe('server', function () {
   before(function () {
-    boot();    
+    boot();
+    reset();    
   });
   describe('postGet', function(){
    it('should return 0 as users length', function(done){

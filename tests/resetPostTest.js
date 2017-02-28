@@ -1,10 +1,14 @@
 var boot = require('../server').boot;
 var shutdown = require('../server').shutdown;
+var reset = require('../server').reset;
+var init = require('../server').init;
 var port = require('../server').port;
 var superagent = require('superagent-promise')(require('superagent'), Promise);
 describe('server', function () {
   before(function () {
-    boot();    
+    boot();
+    reset();
+    init();    
   });
     describe('postReset', function(){
     it('should get current users count greater then 0', function(done){
@@ -25,7 +29,7 @@ describe('server', function () {
         else return;
       })
     });        
-    it('should get current users count equal 0', function(done){
+    it('should get current users count equal to 0', function(done){
       superagent
       .get('http://localhost:'+port)
       .then(function(res){

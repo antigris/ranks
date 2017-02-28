@@ -3,13 +3,12 @@ var app = express();
 var http = require('http');
 var bodyParser = require('body-parser');
 var users = [];
-var groupCapacity = 10;
-
-//initUsers();
 
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 3427);
-app.set('groupCapacity', 20);
+app.set('groupCapacity', 10);
+
+//initUsers();
 
 app.get('/', function(req, res) {
   res.json(users);
@@ -33,8 +32,8 @@ app.post('/inc_rank',function(req, res) {
 });
 
 app.post('/reset_ratings',function(req,res) {
-        users = [];
-        res.json(users.length);
+    reset();
+    res.json(users.length);
 });
 
 var server = http.createServer(app);
@@ -56,17 +55,10 @@ else {
   exports.shutdown = shutdown;
   exports.port = app.get('port');
   exports.groupCapacity = app.get('groupCapacity');
+  exports.reset = reset;
+  exports.init = initUsers;
 }
 
-function initUsers() {
-    for(let u =0; u<13;u++) {
-        let user = {
-            points:u*u,
-            groupId:groupIndex(users.length)
-        };
-        users.push(user);
-    }
-}
 
 function containsUser(array, id) {
     for(i=0;i<array.length;i++) {
@@ -92,6 +84,10 @@ function oneSortedGroup(groupId) {
    return group;
 };
 
+function reset(){
+    users = [];
+};
+
 function winners() {
     let winners = []
     let groupCount = groupIndex(users.length)+1;
@@ -109,8 +105,21 @@ function userRank(userId) {
         let user = users[index];
         rank._id = users[index]._id;
         rank.pts = user.points;
-        let group = oneGroup(user.groupId);
+        let group = oneSortedGroup(user.groupId);
         rank.place = containsUser(group,userId) + 1;
     }
     return rank;
 };
+
+
+function initUsers() {
+    for(let u =0; u<app.get('groupCapacity')+1;u++) {
+        let user = {
+            _id : u,
+            points:u*u,
+            groupId:groupIndex(users.length)
+        };
+        users.push(user);
+    }
+    return winners();
+}
