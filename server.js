@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var http = require('http');
 var bodyParser = require('body-parser');
+var mongojs = require('mongojs');
+var db = mongojs('users',['users']);
 var users = [];
 
 app.use(bodyParser.json());
