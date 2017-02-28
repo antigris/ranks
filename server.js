@@ -60,15 +60,49 @@ function initUsers() {
     }
 }
 
-function groupIndex(userCount) {
-    return ((userCount-userCount%app.get('groupCapacity'))/app.get('groupCapacity'));
-};
-
-
-
 function containsUser(array, id) {
     for(i=0;i<array.length;i++) {
         if(array[i]["_id"] == id) return i;        
     }
     return -1;
+};
+
+function groupIndex(userCount) {
+    return ((userCount-userCount%app.get('groupCapacity'))/app.get('groupCapacity'));
+};
+
+function oneSortedGroup(groupId) {
+    let group = [];
+    for(let u =0;u<users.length;u++){
+        if(users[u].groupId == groupId) group.push(users[u]);
+    }
+    group.sort(function (a, b) {
+        if (a.points < b.points) return 1;
+        if (a.points > b.points) return -1;
+        return 0;
+    })
+   return group;
+};
+
+function winners() {
+    let winners = []
+    let groupCount = groupIndex(users.length)+1;
+    for(let g = 0;g<groupCount;g++) {
+        let w = oneSortedGroup(g)[0];
+        winners.push({_id:w._id,points:w.points});
+    }
+    return winners;
+};
+
+function userRank(userId) {
+    let rank = {};
+    let index = containsUser(users,userId);
+    if(index>-1) {
+        let user = users[index];
+        rank._id = users[index]._id;
+        rank.pts = user.points;
+        let group = oneGroup(user.groupId);
+        rank.place = containsUser(group,userId) + 1;
+    }
+    return rank;
 };
