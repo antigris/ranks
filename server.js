@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.set('port', process.env.PORT || 3427);
 app.set('groupCapacity', 10);
 
-//initUsers();
+initUsers();
 
 app.get('/', function(req, res) {
   res.json(users);
@@ -40,7 +40,7 @@ var server = http.createServer(app);
 var boot = function () {
   
   server.listen(app.get('port'), function(){
-    console.info('server on port ' + app.get('port'));
+    console.info('running on port ' + app.get('port'));
   });
 };
 var shutdown = function() {
@@ -57,6 +57,7 @@ else {
   exports.groupCapacity = app.get('groupCapacity');
   exports.reset = reset;
   exports.init = initUsers;
+  exports.rank = userRank;
 }
 
 
