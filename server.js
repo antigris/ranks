@@ -3,21 +3,20 @@ var app = express();
 var http = require('http');
 var bodyParser = require('body-parser');
 var users = [];
-var groupCapacity = 20;
-initUsers();
+var groupCapacity = 10;
+
+//initUsers();
 
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 3427);
 
 app.get('/', function(req, res) {
-  res.json([users]);
+  res.json(users);
 });
-
-
-
 
 var server = http.createServer(app);
 var boot = function () {
+  
   server.listen(app.get('port'), function(){
     console.info('server on port ' + app.get('port'));
   });
@@ -36,7 +35,7 @@ else {
 }
 
 function initUsers() {
-    for(let u =0; u<groupCapacity+1;u++) {
+    for(let u =0; u<13;u++) {
         let user = {
             points:u*u,
             groupId:groupIndex(users.length)
@@ -50,11 +49,12 @@ function groupIndex(userCount) {
 };
 
 app.post('/inc_rank',function(req, res) {
-        userId = req.body._id;
+   // console.log(req.body._id);
+        userId = req.body._id;        
         increment = req.body.pts;
         let index = containsUser(users, userId);
         if(index > -1) users[index].points+=incRate;
-        else users.push({"points":increment,"groupId":groupIndex(users.length)});
+        else  users.push({"_id":-2,"points":increment,"groupId":groupIndex(users.length)});//when db remove id
         res.json(users[users.length-1]);
 });
 

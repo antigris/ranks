@@ -18,7 +18,7 @@ describe('server', function () {
         else return;
       })
     });  
-    it('should response the same', function(done){
+    it('should respond the same', function(done){
       let request = {"_id":0,"pts":1};
       superagent
       .post('http://localhost:'+port + '/inc_rank')
@@ -27,7 +27,7 @@ describe('server', function () {
         if(res.body.points === request.pts) done();
         else return;
       })
-    });
+    });  
   });
   after(function () {
     shutdown();
