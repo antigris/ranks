@@ -11,8 +11,10 @@ app.set('port', process.env.PORT || 3427);
 
 app.get('/', function(req, res) {
   res.json([users]);
-
 });
+
+
+
 
 var server = http.createServer(app);
 var boot = function () {
@@ -45,4 +47,20 @@ function initUsers() {
 
 function groupIndex(userCount) {
     return ((userCount-userCount%groupCapacity)/groupCapacity);
+};
+
+app.post('/inc_rank',function(req, res) {
+        userId = req.body._id;
+        increment = req.body.pts;
+        let index = containsUser(users, userId);
+        if(index > -1) users[index].points+=incRate;
+        else users.push({"points":increment,"groupId":groupIndex(users.length)});
+        res.json(users[users.length-1]);
+});
+
+function containsUser(array, id) {
+    for(i=0;i<array.length;i++) {
+        if(array[i]["_id"] == id) return i;        
+    }
+    return -1;
 };

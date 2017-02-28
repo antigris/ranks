@@ -7,20 +7,24 @@ describe('server', function () {
   before(function () {
     boot();    
   });
-  describe('getDefault', function(){      
-    it('should respond to GET', function(done){
+  describe('postDefault', function(){      
+    it('should respond to POST', function(done){
+      let request = {"_id":0,"pts":1};
       superagent
-      .get('http://localhost:'+port)
+      .post('http://localhost:'+port + '/inc_rank')
+      .send(request)
       .then(function(res){
         if(res.statusCode===200) done();
         else return;
       })
-    });
-    it('should get array', function(done){
+    });  
+    it('should response the same', function(done){
+      let request = {"_id":0,"pts":1};
       superagent
-      .get('http://localhost:'+port)
+      .post('http://localhost:'+port + '/inc_rank')
+      .send(request)
       .then(function(res){
-        if(Array.isArray(res.body)) done();
+        if(res.body.points === request.pts) done();
         else return;
       })
     });
