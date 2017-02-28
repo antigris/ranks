@@ -1,9 +1,10 @@
 var boot = require('../server').boot;
 var shutdown = require('../server').shutdown;
 var port = require('../server').port;
+var groupCapacity = require('../server').groupCapacity;
 var superagent = require('superagent-promise')(require('superagent'), Promise);
 var users =[];
-var groupCapacity = 10;
+
 
 describe('server', function () {
   before(function () {

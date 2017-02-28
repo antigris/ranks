@@ -9,6 +9,7 @@ var groupCapacity = 10;
 
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 3427);
+app.set('groupCapacity', 20);
 
 app.get('/', function(req, res) {
   res.json(users);
@@ -32,6 +33,7 @@ else {
   exports.boot = boot;
   exports.shutdown = shutdown;
   exports.port = app.get('port');
+  exports.groupCapacity = app.get('groupCapacity');
 }
 
 function initUsers() {
@@ -45,7 +47,7 @@ function initUsers() {
 }
 
 function groupIndex(userCount) {
-    return ((userCount-userCount%groupCapacity)/groupCapacity);
+    return ((userCount-userCount%app.get('groupCapacity'))/app.get('groupCapacity'));
 };
 
 app.post('/inc_rank',function(req, res) {
