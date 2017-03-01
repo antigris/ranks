@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.set('port', process.env.PORT || 3427);
 app.set('groupCapacity', 10);
 
-initUsers();
+//initUsers();
 
 app.get('/', function(req, res) {
   res.json(users);
@@ -28,9 +28,14 @@ app.post('/inc_rank',function(req, res) {
         userId = req.body._id;        
         increment = req.body.pts;
         let index = containsUser(users, userId);
-        if(index > -1) users[index].points+=incRate;
-        else  users.push({"_id":-2,"points":increment,"groupId":groupIndex(users.length)});//when db remove id
-        res.json(users[users.length-1]);
+        let user;
+        if(index>-1){
+            addPoints(userId,index,increment);
+            user = users[index];
+        }
+        else user = addUser(increment);
+         
+        res.json(user);
 });
 
 app.post('/reset_ratings',function(req,res) {
@@ -40,7 +45,7 @@ app.post('/reset_ratings',function(req,res) {
 
 var server = http.createServer(app);
 var boot = function () {
-  loadUsers();
+  dbLoadUsers();
   server.listen(app.get('port'), function(){
     console.info('running on port ' + app.get('port'));
   });
@@ -88,6 +93,7 @@ function oneSortedGroup(groupId) {
 };
 
 function reset(){
+    db.users.remove({});
     users = [];
 };
 
@@ -114,12 +120,31 @@ function userRank(userId) {
     return rank;
 };
 
-function loadUsers() {
+function dbLoadUsers() {
     db.users.find({},function(err,docs){
         for(let u = 0; u<docs.length;u++) users.push(docs[u]);           
     });  
 };
 
+function addUser(increment) {
+    let user = {
+        points:increment,
+        groupId:groupIndex(users.length)
+    };
+    db.users.insert(user,function(err,docsInserted){
+        users.push(docsInserted);        
+    });
+    return user;
+};
+
+function addPoints(userId,index, increment) {    
+    users[index].points+=increment;
+    db.users.findAndModify({
+        query: { _id: mongojs.ObjectId(userId)},    
+        update: { $inc:{ points: increment}},   
+        new: true },function(err,doc){});
+
+};
 
 function initUsers() {
     for(let u =0; u<app.get('groupCapacity')+1;u++) {

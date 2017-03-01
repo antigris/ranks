@@ -9,7 +9,7 @@ var winners = [];
 describe('server', function () {
   before(function () {
     boot();
-    reset();
+   // reset();
     winners = init();
   });
   describe('getWinners', function(){      
