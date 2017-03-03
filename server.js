@@ -7,10 +7,8 @@ var db = mongojs('users',['users']);
 var users = [];
 
 app.use(bodyParser.json());
-app.set('port', process.env.PORT || 3427);
-app.set('groupCapacity', 10);
-
-//initUsers();
+app.set('port', process.env.PORT || 3333);
+app.set('groupCapacity', 20);
 
 app.get('/', function(req, res) {
   res.json(users);
@@ -26,7 +24,7 @@ app.get('/get_winners',function(req,res){
 
 app.post('/inc_rank',function(req, res) {
         userId = req.body._id;        
-        increment = req.body.pts;
+        increment = req.body.points;
         let index = containsUser(users, userId);
         let user;
         if(index>-1){
@@ -34,7 +32,6 @@ app.post('/inc_rank',function(req, res) {
             user = users[index];
         }
         else user = addUser(increment);
-         
         res.json(user);
 });
 
@@ -45,10 +42,7 @@ app.post('/reset_ratings',function(req,res) {
 
 var server = http.createServer(app);
 var boot = function () {
-  dbLoadUsers();
-  server.listen(app.get('port'), function(){
-    console.info('running on port ' + app.get('port'));
-  });
+    dbLoadUsers(); 
 };
 var shutdown = function() {
   server.close();
@@ -57,14 +51,11 @@ if (require.main === module) {
   boot();
 }
 else {
-  console.info('Running server as a module')
-  exports.boot = boot;
-  exports.shutdown = shutdown;
-  exports.port = app.get('port');
-  exports.groupCapacity = app.get('groupCapacity');
-  exports.reset = reset;
-  exports.init = initUsers;
-  exports.rank = userRank;
+    console.info('Running server as a module')
+    exports.boot = boot;
+    exports.shutdown = shutdown;
+    exports.port = app.get('port');
+    exports.groupCapacity = app.get('groupCapacity');
 }
 
 
@@ -76,7 +67,7 @@ function containsUser(array, id) {
 };
 
 function groupIndex(userCount) {
-    return ((userCount-userCount%app.get('groupCapacity'))/app.get('groupCapacity'));
+    return (userCount-userCount%app.get('groupCapacity'))/app.get('groupCapacity');
 };
 
 function oneSortedGroup(groupId) {
@@ -99,11 +90,13 @@ function reset(){
 
 function winners() {
     let winners = []
-    let groupCount = groupIndex(users.length)+1;
+    let groupCount = groupIndex(users.length);
+
     for(let g = 0;g<groupCount;g++) {
         let w = oneSortedGroup(g)[0];
+        
         winners.push({_id:w._id,points:w.points});
-    }
+    }   
     return winners;
 };
 
@@ -113,7 +106,7 @@ function userRank(userId) {
     if(index>-1) {
         let user = users[index];
         rank._id = users[index]._id;
-        rank.pts = user.points;
+        rank.points = user.points;
         let group = oneSortedGroup(user.groupId);
         rank.place = containsUser(group,userId) + 1;
     }
@@ -121,20 +114,27 @@ function userRank(userId) {
 };
 
 function dbLoadUsers() {
-    db.users.find({},function(err,docs){
-        for(let u = 0; u<docs.length;u++) users.push(docs[u]);           
-    });  
+    db.users.find({},function(err,docs){        
+            for(let u = 0; u<docs.length;u++) users.push(docs[u]);         
+            server.listen(app.get('port'), function(){
+            console.info('running on port ' + app.get('port'));
+            
+        });
+    });
+     
 };
 
 function addUser(increment) {
-    let user = {
-        points:increment,
-        groupId:groupIndex(users.length)
-    };
-    db.users.insert(user,function(err,docsInserted){
-        users.push(docsInserted);        
-    });
-    return user;
+    users.push({points:increment});
+    let groupId = groupIndex(users.length-1);
+    let index =users.length-1;
+    users[index].groupId = groupId;
+    let user = users[index];
+    db.users.insert(user, function(err,docsInserted){
+        users[index]._id = docsInserted._id;
+    })
+    
+    return users[index];
 };
 
 function addPoints(userId,index, increment) {    
@@ -143,17 +143,5 @@ function addPoints(userId,index, increment) {
         query: { _id: mongojs.ObjectId(userId)},    
         update: { $inc:{ points: increment}},   
         new: true },function(err,doc){});
-
+    
 };
-
-function initUsers() {
-    for(let u =0; u<app.get('groupCapacity')+1;u++) {
-        let user = {
-            _id : u,
-            points:u*u,
-            groupId:groupIndex(users.length)
-        };
-        users.push(user);
-    }
-    return winners();
-}
